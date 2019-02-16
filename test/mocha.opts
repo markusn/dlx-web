@@ -1,0 +1,4 @@
+--reporter spec
+--recursive
+--ui mocha-cakes-2
+--exit

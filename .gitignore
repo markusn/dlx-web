@@ -1,0 +1,50 @@
+yarn-error.log
+
+# Dependency directory and npm log
+node_modules
+npm-debug.log
+
+/dist
+
+# Code coverage results
+/coverage
+
+# Built package
+/*.tgz
+
+# Project files
+.tern-port
+.tern-project
+.idea
+*.iml
+
+# Compiled client resources
+/public
+
+# Cache
+.eslintcache
+
+# Revision file
+config/_revision
+
+# OS X
+.DS_Store
+
+# The .env file is developer local and should never be checked in
+.env
+
+# Atom CTAGS
+.tags
+tags
+
+# VIM swap files
+.*.sw?
+
+# Ignore everything in logs
+logs/*
+# Except the gitignore to be able to commit the logs folder
+!logs/.gitignore
+
+tmp
+
+*.log

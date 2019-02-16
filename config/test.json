@@ -1,0 +1,15 @@
+{
+  "dlxRabbit": {
+    "url": "amqp://localhost:5673",
+    "exchange": "DLX"
+  },
+  "testRabbit": {
+    "url": "amqp://localhost:5673",
+    "exchange": "test",
+    "resubscribeOnError": false,
+    "queueArguments": {
+      "x-dead-letter-exchange": "DLX"
+    }
+  },
+  "dlxQueue": "dead-letter-manual-test"
+}

@@ -1,0 +1,7 @@
+{
+  "dlxRabbit": {
+    "url": "amqp://localhost:5673",
+    "exchange": "DLX"
+  },
+  "dlxQueue": "dead-letter-manual"
+}
