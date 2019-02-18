@@ -2,3 +2,4 @@
 --recursive
 --ui mocha-cakes-2
 --exit
+--require ./test/setup.js

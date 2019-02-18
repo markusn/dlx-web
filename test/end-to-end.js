@@ -1,11 +1,8 @@
 "use strict";
-process.env.NODE_ENV = "test";
-require("mocha-cakes-2");
-const chai = require("chai");
+
 const puppeteer = require("puppeteer");
 const config = require("exp-config");
 const initConnection = require("exp-amqp-connection");
-Object.assign(global, {should: chai.should()});
 
 const puppeteerOpts = {
   args: ["--disable-features=site-per-process"],
@@ -55,10 +52,9 @@ Feature("dlx-web", () => {
   });
 
   Scenario("sending a message back to the queue", () => {
-
-    let nacked = [];
-    let acked = [];
-    let keep = [];
+    const nacked = [];
+    const acked = [];
+    const keep = [];
     let page;
 
     before(async () => {
@@ -67,17 +63,21 @@ Feature("dlx-web", () => {
     });
 
     Given("that there is a message handler", (done) => {
-      broker.subscribeTmp("#", (message, meta, notify) => {
-        if (message.do === "nack") {
-          nacked.push(message);
-          return notify.nack(false);
-        }
-        if (message.do === "ack") {
-          acked.push(message);
-          return notify.ack();
-        }
-        keep.push(message);
-      }, done);
+      broker.subscribeTmp(
+        "#",
+        (message, meta, notify) => {
+          if (message.do === "nack") {
+            nacked.push(message);
+            return notify.nack(false);
+          }
+          if (message.do === "ack") {
+            acked.push(message);
+            return notify.ack();
+          }
+          return keep.push(message);
+        },
+        done
+      );
     });
 
     And("that there is a published message which is nacked", (done) => {
@@ -97,10 +97,10 @@ Feature("dlx-web", () => {
       await page.click(".object-content > .variable-row > .click-to-edit > .click-to-edit-icon > svg");
 
       // erase nack and write ack
-      await page.keyboard.press('Backspace');
-      await page.keyboard.press('Backspace');
-      await page.keyboard.press('Backspace');
-      await page.keyboard.press('Backspace');
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
       await page.type(".object-content > .variable-row > .variable-value", "ack");
       await page.waitForSelector("div > .edit-check > svg > g > path");
       await page.click("div > .edit-check > svg > g > path");
@@ -122,7 +122,6 @@ Feature("dlx-web", () => {
   });
 });
 
-
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
