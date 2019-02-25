@@ -1,4 +1,4 @@
-const {init} = require("./lib/server/index");
+const {init, shutdown} = require("./lib/server/index");
 
 const logger = {
   info: (...args) => console.log("info:", ...args),
@@ -12,3 +12,5 @@ if (require.main === module) {
     });
   });
 }
+
+module.exports = {init, shutdown};
