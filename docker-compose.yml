@@ -1,8 +1,22 @@
 version: '3'
 services:
+  dlx-web:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - rabbitmq
+    environment:
+      - NODE_ENV=development
+      - ALLOW_TEST_ENV_OVERRIDE=true
+      - dlxRabbit.url=amqp://rabbitmq
   rabbitmq:
     image: rabbitmq:3-management-alpine
     restart: always
     ports:
-      - "5673:5672"
-      - "15673:15672"
+      - "5672:5672"
+      - "15672:15672"
+
