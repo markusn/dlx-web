@@ -8,4 +8,7 @@ services:
 before_install:
   - docker-compose up -d rabbitmq
 
+before_script:
+  - yarn run build
+
 cache: yarn
