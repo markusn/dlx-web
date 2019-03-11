@@ -17,3 +17,5 @@ a header instead of using the actual routing key.
 `payloadCorrelationId` (optional) instead of using the AMQP standard
 correlation id header use the JSON path from `payloadCorrelationId` to
 grab the correlation id from the payload.
+`basicAuth` (optional) if set and contains a key `username` and
+`password` DLX-web will be protected by basic auth.
