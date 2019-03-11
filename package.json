@@ -5,11 +5,11 @@
   "main": "app.js",
   "scripts": {
     "build": "webpack --mode production",
-    "start": "npm run build && node app.js",
+    "start": "yarn run build && node app.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "nodemon app.js",
-    "lint": "npx eslint --ext .js --ext .jsx .",
-    "lint-fix": "npx eslint --ext .js --ext .jsx . --fix",
+    "lint": "eslint --ext .js --ext .jsx .",
+    "lint-fix": "eslint --ext .js --ext .jsx . --fix",
     "prepack": "webpack --mode production",
     "dev": "concurrently \"yarn run server\" \"yarn run client\"",
     "test": "mocha"
