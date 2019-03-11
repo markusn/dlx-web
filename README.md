@@ -1,4 +1,6 @@
 # dlx-web
+[![Build Status](https://travis-ci.org/markusn/dlx-web.svg?branch=master)](https://travis-ci.org/markusn/dlx-web)
+
 Web UI and backend to manually handle dead letters. Works by checking out all messages from
 the dead letter queue and keeping them until shutdown or an action is
 taken from the GUI. The supported actions is a delete (acks the
