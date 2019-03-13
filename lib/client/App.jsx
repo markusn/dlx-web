@@ -134,6 +134,17 @@ export default class App extends React.Component {
     return true;
   };
 
+  correlationIdFormatter = (cell) => {
+    const prefix = __CONFIG__.correlationIdUrlPrefix || "";
+    const suffix = __CONFIG__.correlationIdUrlSuffix || "";
+    if (prefix) {
+      const corrUrl = `${prefix}${cell}${suffix}`;
+      return <a href={corrUrl}>{cell}</a>;
+    } else {
+      return cell;
+    }
+  };
+
   render() {
     const {data} = this.state;
     const columns = [
@@ -141,7 +152,7 @@ export default class App extends React.Component {
       {text: "Id", dataField: "id", hidden: true},
       {text: "Queues", dataField: "queues", sort: true},
       {text: "Routing Key", dataField: "routingKey", sort: true},
-      {text: "Correlation Id", dataField: "correlationId", sort: true}
+      {text: "Correlation Id", dataField: "correlationId", sort: true, formatter: this.correlationIdFormatter}
     ];
     const selectRowProp = {
       clickToExpand: true,

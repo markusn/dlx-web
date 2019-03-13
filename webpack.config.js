@@ -1,6 +1,8 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
+const config = require("exp-config");
 
 const outputDirectory = "dist";
 
@@ -50,6 +52,7 @@ module.exports = {
     new CleanWebpackPlugin([outputDirectory]),
     new HtmlWebpackPlugin({
       template: "./public/index.html"
-    })
+    }),
+    new webpack.DefinePlugin({__CONFIG__: JSON.stringify(config.clientConfig || {})})
   ]
 };

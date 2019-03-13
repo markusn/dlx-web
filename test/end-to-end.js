@@ -2,6 +2,7 @@ const puppeteer = require("puppeteer");
 const config = require("exp-config");
 const request = require("request-promise-native");
 const initConnection = require("exp-amqp-connection");
+const uuid = require("uuid");
 
 const puppeteerOpts = {
   args: ["--disable-features=site-per-process"],
@@ -37,7 +38,6 @@ Feature("dlx-web", () => {
       server = app.listen((err) => {
         if (err) return done(err);
         url = `http://localhost:${server.address().port}`;
-        console.log({url});
         return done();
       });
     });
@@ -55,6 +55,7 @@ Feature("dlx-web", () => {
     const acked = [];
     const keep = [];
     let page;
+    const correlationId = uuid.v4();
 
     before(async () => {
       page = await browser.newPage();
@@ -80,7 +81,7 @@ Feature("dlx-web", () => {
     });
 
     And("that there is a published message which is nacked", (done) => {
-      broker.publish("foo", {do: "nack"}, done);
+      broker.publish("foo", {do: "nack"}, {correlationId}, done);
     });
 
     And("the message is handled by dlx-web", async () => {
@@ -138,6 +139,7 @@ Feature("dlx-web", () => {
     const acked = [];
     const keep = [];
     let page;
+    const correlationId = uuid.v4();
 
     before(async () => {
       page = await browser.newPage();
@@ -163,7 +165,7 @@ Feature("dlx-web", () => {
     });
 
     And("that there is a published message which is nacked", (done) => {
-      broker.publish("foo", {do: "nack"}, done);
+      broker.publish("foo", {do: "nack"}, {correlationId}, done);
     });
 
     And("that a user navigates to dlx-web", async () => {
@@ -174,7 +176,6 @@ Feature("dlx-web", () => {
       // click the checkbox
       await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
       await page.click(".table > tbody > tr > td > .selection-input-4");
-
       // click delete
       await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
       await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
@@ -187,6 +188,72 @@ Feature("dlx-web", () => {
     });
 
     after((done) => broker.unsubscribeAll(done));
+  });
+
+  Scenario("message correlationId should be a clickable link", () => {
+    const nacked = [];
+    const acked = [];
+    const keep = [];
+    let page;
+    const correlationId = uuid.v4();
+
+    before(async () => {
+      page = await browser.newPage();
+      await page._client.send("Network.clearBrowserCookies");
+    });
+
+    Given("that there is a message handler", (done) => {
+      broker.subscribeTmp(
+        "#",
+        (message, meta, notify) => {
+          if (message.do === "nack") {
+            nacked.push(message);
+            return notify.nack(false);
+          }
+          if (message.do === "ack") {
+            acked.push(message);
+            return notify.ack();
+          }
+          return keep.push(message);
+        },
+        done
+      );
+    });
+
+    And("that there is a published message which is nacked", (done) => {
+      broker.publish("foo", {do: "nack"}, {correlationId}, done);
+    });
+
+    And("the message is handled by dlx-web", async () => {
+      await sleep(500);
+      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      messages.length.should.eql(1);
+    });
+
+    When("that a user navigates to dlx-web", async () => {
+      await page.goto(url, {waitUntil: "domcontentloaded"});
+    });
+
+    Then("the correlation id should be a clickable link", async () => {
+      const hrefs = await page.$$eval("a", (as) => as.map((a) => a.href));
+      hrefs.length.should.eql(1);
+      hrefs[0].should.eql(
+        `${config.clientConfig.correlationIdUrlPrefix}${correlationId}${config.clientConfig.correlationIdUrlSuffix}`
+      );
+    });
+
+    after(async () => {
+      // click the checkbox
+      await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
+      await page.click(".table > tbody > tr > td > .selection-input-4");
+      // click delete
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+    });
+
+    after((done) => {
+      broker.unsubscribeAll(done);
+    });
   });
 });
 

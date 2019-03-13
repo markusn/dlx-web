@@ -11,5 +11,9 @@
       "x-dead-letter-exchange": "DLX"
     }
   },
-  "dlxQueue": "dead-letter-manual-test"
+  "dlxQueue": "dead-letter-manual-test",
+  "clientConfig": {
+    "correlationIdUrlPrefix": "http://prefix/",
+    "correlationIdUrlSuffix": "/suffix"
+  }
 }

@@ -13,6 +13,7 @@
     "browser": true
   },
   "globals": {
+    "__CONFIG__": false,
     "Feature": false,
     "And": false,
     "Then": false,
