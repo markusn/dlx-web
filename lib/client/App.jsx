@@ -138,7 +138,7 @@ export default class App extends React.Component {
     const {data} = this.state;
     const columns = [
       {text: "First occurred", dataField: "ts", sort: true},
-      {text: "Id", dataField: "id", sort: true},
+      {text: "Id", dataField: "id", hidden: true},
       {text: "Queues", dataField: "queues", sort: true},
       {text: "Routing Key", dataField: "routingKey", sort: true},
       {text: "Correlation Id", dataField: "correlationId", sort: true}
