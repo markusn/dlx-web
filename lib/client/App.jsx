@@ -92,7 +92,7 @@ export default class App extends React.Component {
 
   handleBtnClickDelete = () => {
     const promises = this.state.selected.map((msgId) => {
-      return axios.post(`/api/messages/${msgId}/ignore`);
+      return axios.post(`/api/messages/${msgId}/delete`);
     });
     Promise.all(promises).then(() => {
       console.log("deleted", this.state.selected);
