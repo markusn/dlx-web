@@ -1,7 +1,6 @@
-"use strict";
-
 const puppeteer = require("puppeteer");
 const config = require("exp-config");
+const request = require("request-promise-native");
 const initConnection = require("exp-amqp-connection");
 
 const puppeteerOpts = {
@@ -33,8 +32,8 @@ Feature("dlx-web", () => {
   });
 
   before((done) => {
-    broker = initConnection(behavior);
     init((app) => {
+      broker = initConnection(behavior);
       server = app.listen((err) => {
         if (err) return done(err);
         url = `http://localhost:${server.address().port}`;
@@ -84,6 +83,12 @@ Feature("dlx-web", () => {
       broker.publish("foo", {do: "nack"}, done);
     });
 
+    And("the message is handled by dlx-web", async () => {
+      await sleep(500);
+      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      messages.length.should.eql(1);
+    });
+
     And("that a user navigates to dlx-web", async () => {
       await page.goto(url, {waitUntil: "domcontentloaded"});
     });
@@ -119,6 +124,69 @@ Feature("dlx-web", () => {
       acked.length.should.eql(1);
       acked[0].do.should.eql("ack");
     });
+
+    And("there should be no messages left", async () => {
+      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      messages.length.should.eql(0);
+    });
+
+    after((done) => broker.unsubscribeAll(done));
+  });
+
+  Scenario("deleting a message", () => {
+    const nacked = [];
+    const acked = [];
+    const keep = [];
+    let page;
+
+    before(async () => {
+      page = await browser.newPage();
+      await page._client.send("Network.clearBrowserCookies");
+    });
+
+    Given("that there is a message handler", (done) => {
+      broker.subscribeTmp(
+        "#",
+        (message, meta, notify) => {
+          if (message.do === "nack") {
+            nacked.push(message);
+            return notify.nack(false);
+          }
+          if (message.do === "ack") {
+            acked.push(message);
+            return notify.ack();
+          }
+          return keep.push(message);
+        },
+        done
+      );
+    });
+
+    And("that there is a published message which is nacked", (done) => {
+      broker.publish("foo", {do: "nack"}, done);
+    });
+
+    And("that a user navigates to dlx-web", async () => {
+      await page.goto(url, {waitUntil: "domcontentloaded"});
+    });
+
+    When("the user marks and deleted the message", async () => {
+      // click the checkbox
+      await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
+      await page.click(".table > tbody > tr > td > .selection-input-4");
+
+      // click delete
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+    });
+
+    Then("the message should be gone", async () => {
+      await sleep(500);
+      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      messages.length.should.eql(0);
+    });
+
+    after((done) => broker.unsubscribeAll(done));
   });
 });
 
