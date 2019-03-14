@@ -128,15 +128,14 @@ export default class App extends React.Component {
   handleMessageEdit = (o, id) => {
     const {data} = this.state;
     const src = data[id];
-    console.log({o});
     src.message = o.updated_src;
     this.setState({data});
     return true;
   };
 
   correlationIdFormatter = (cell) => {
-    const prefix = __CONFIG__.correlationIdUrlPrefix || "";
-    const suffix = __CONFIG__.correlationIdUrlSuffix || "";
+    const prefix = window.config.correlationIdUrlPrefix || "";
+    const suffix = window.config.correlationIdUrlSuffix || "";
     if (prefix) {
       const corrUrl = `${prefix}${cell}${suffix}`;
       return <a href={corrUrl}>{cell}</a>;

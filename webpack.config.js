@@ -1,13 +1,11 @@
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
-const config = require("exp-config");
 
 const outputDirectory = "dist";
 
 module.exports = {
-  entry: ["babel-polyfill", "./lib/client/index.jsx"],
+  entry: ["babel-polyfill", "./lib/client/App.jsx"],
   output: {
     path: path.join(__dirname, outputDirectory),
     filename: "bundle.js"
@@ -48,11 +46,5 @@ module.exports = {
       "/api": "http://localhost:3000"
     }
   },
-  plugins: [
-    new CleanWebpackPlugin([outputDirectory]),
-    new HtmlWebpackPlugin({
-      template: "./public/index.html"
-    }),
-    new webpack.DefinePlugin({__CONFIG__: JSON.stringify(config.clientConfig || {})})
-  ]
+  plugins: [new CleanWebpackPlugin([outputDirectory])]
 };
