@@ -185,7 +185,7 @@ export default class App extends React.Component {
 
     return (
       <div>
-        <h1>DLX Web</h1>
+        <h1>DLX Web ({window.envName.toUpperCase()})</h1>
         <BootstrapTable
           bootstrap4={true}
           data={Object.values(data)}
