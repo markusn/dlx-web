@@ -138,7 +138,7 @@ export default class App extends React.Component {
     const suffix = window.config.correlationIdUrlSuffix || "";
     if (prefix) {
       const corrUrl = `${prefix}${cell}${suffix}`;
-      return <a href={corrUrl}>{cell}</a>;
+      return <a href={corrUrl} target="_blank">{cell}</a>;
     } else {
       return cell;
     }
