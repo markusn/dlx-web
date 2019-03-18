@@ -235,11 +235,12 @@ Feature("dlx-web", () => {
     });
 
     Then("the correlation id should be a clickable link", async () => {
-      const hrefs = await page.$$eval("a", (as) => as.map((a) => a.href));
+      const hrefs = await page.$$eval("a", (as) => as.map((a) => {return {href: a.href, target: a.target}}));
       hrefs.length.should.eql(1);
-      hrefs[0].should.eql(
+      hrefs[0].href.should.eql(
         `${config.clientConfig.correlationIdUrlPrefix}${correlationId}${config.clientConfig.correlationIdUrlSuffix}`
       );
+      hrefs[0].target.should.eql("_blank");
     });
 
     after(async () => {
