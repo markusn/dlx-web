@@ -161,12 +161,18 @@ export default class App extends React.Component {
         </button>
       );
     } else {
+      const link = (
+        <a href={trelloItem.shortUrl} target="_blank">
+          Trello card
+        </a>
+      );
+      const status = trelloItem.list ? <strong className="p-1">Status: {trelloItem.listName}</strong> : undefined;
+      const assigned = trelloItem.members ? <strong className="p-1">({trelloItem.members})</strong> : undefined;
       return (
         <div>
-          <a href={trelloItem.shortUrl} target="_blank">
-            Trello card
-          </a>
-          <strong> Status: {trelloItem.listName}</strong>
+          {link}
+          {status}
+          {assigned}
         </div>
       );
     }
