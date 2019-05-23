@@ -3,12 +3,5 @@
     "url": "amqp://localhost:5672",
     "exchange": "DLX"
   },
-  "dlxQueue": "dead-letter-manual",
-  "trello": {
-    "apiKey": "",
-    "token": "",
-    "boardId": "",
-    "createOnListId": "",
-    "labelIds": ""
-  }
+  "dlxQueue": "dead-letter-manual"
 }
