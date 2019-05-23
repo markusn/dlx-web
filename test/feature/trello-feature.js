@@ -20,17 +20,27 @@ Feature("Trello", () => {
           list: true,
           query: message.correlationId,
           // eslint-disable-next-line camelcase
-          card_fields: "desc"
+          card_fields: "desc,shortUrl",
+          // eslint-disable-next-line camelcase
+          card_list: true,
+          // eslint-disable-next-line camelcase
+          card_members: true
         })
         .reply(200, {
-          cards: [{id: "some-trello-id"}]
+          cards: [
+            {
+              id: "some-trello-id",
+              shortUrl: "http://some-short-url",
+              list: {name: "some-list-name"}
+            }
+          ]
         });
     });
 
     And("we can get card by id from trello", () => {
       nock("https://api.trello.com")
         .get("/1/cards/some-trello-id")
-        .times(2)
+        .times(1)
         .query({
           key: config.trello.apiKey,
           token: config.trello.token,

@@ -180,16 +180,10 @@ export default class App extends React.Component {
 
   handleBtnClickAddTrelloCard = (trelloItem) => {
     return axios.post(`/api/trello/${trelloItem.msg.id}`, {...trelloItem.msg}).then((card) => {
-      console.log(JSON.stringify(trelloItem));
-      console.log("created trello card");
-      console.log(JSON.stringify(card));
       const {data} = this.state;
-      console.log("data", JSON.stringify(data));
       const newData = {};
       Object.keys(data).forEach((msgId) => {
-        console.log(msgId);
         if (data[msgId].id === trelloItem.msg.id) {
-          console.log("in if");
           newData[msgId] = {
             ...data[msgId],
             trello: {
