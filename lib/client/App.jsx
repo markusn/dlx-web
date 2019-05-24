@@ -205,9 +205,12 @@ export default class App extends React.Component {
       {text: "Id", dataField: "id", hidden: true},
       {text: "Queues", dataField: "queues", sort: true},
       {text: "Routing Key", dataField: "routingKey", sort: true},
-      {text: "Correlation Id", dataField: "correlationId", sort: true, formatter: this.correlationIdFormatter},
-      {text: "Trello", dataField: "trello", sort: true, formatter: this.trelloFormatter}
+      {text: "Correlation Id", dataField: "correlationId", sort: true, formatter: this.correlationIdFormatter}
     ];
+
+    if (window.config.trello) {
+      columns.push({text: "Trello", dataField: "trello", sort: true, formatter: this.trelloFormatter});
+    }
     const selectRowProp = {
       clickToExpand: true,
       selected: this.state.selected,
