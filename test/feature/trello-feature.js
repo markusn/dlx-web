@@ -98,7 +98,7 @@ Feature("Trello", () => {
           key: config.trello.apiKey,
           token: config.trello.token,
           idList: config.trello.createOnListId,
-          name: `DLX ${message.routingKey}`,
+          name: `DLX ${message.routingKey} (${message.correlationId.substr(message.correlationId.length - 5)})`,
           desc: `**correlationId** \n ${message.correlationId} \n\n---\n\n **Meddelande** \n \`\`\`${JSON.stringify(
             message.message
           )}\`\`\``,
