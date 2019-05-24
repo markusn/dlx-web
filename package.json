@@ -12,7 +12,7 @@
     "lint-fix": "eslint --ext .js --ext .jsx . --fix",
     "prepack": "webpack --mode production",
     "dev": "concurrently \"yarn run server\" \"yarn run client\"",
-    "test": "webpack && mocha"
+    "test": "webpack && mocha --exit && eslint . --cache"
   },
   "repository": {
     "type": "git",
