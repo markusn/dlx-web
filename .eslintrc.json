@@ -21,7 +21,8 @@
     "Given": false,
     "before": false,
     "after": false,
-    "Scenario": false
+    "Scenario": false,
+    "beforeEachScenario": false
   },
   "extends": ["eslint:recommended", "plugin:react/recommended", "prettier/react", "prettier/babel"],
   "plugins": ["prettier", "react", "babel", "jsx-a11y", "import"],
@@ -40,7 +41,12 @@
     "handle-callback-err": 2,
     "key-spacing": [1, {"beforeColon": false, "afterColon": true}],
     "keyword-spacing": 1,
-    "new-cap": 2,
+    "new-cap": [
+      2,
+      {
+        "capIsNewExceptions": ["Feature", "Scenario", "Given", "When", "Then", "And", "But", "I", "System", "Describe"]
+      }
+    ],
     "new-parens": 1,
     "no-alert": 2,
     "no-array-constructor": 2,

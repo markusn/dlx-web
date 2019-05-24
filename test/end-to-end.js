@@ -1,3 +1,4 @@
+const nock = require("nock");
 const puppeteer = require("puppeteer");
 const config = require("exp-config");
 const request = require("request-promise-native");
@@ -62,7 +63,11 @@ Feature("dlx-web", () => {
       await page._client.send("Network.clearBrowserCookies");
     });
 
-    Given("that there is a message handler", (done) => {
+    Given("no messages are on the DLX", async () => {
+      await clearMessages(url);
+    });
+
+    And("that there is a message handler", (done) => {
       broker.subscribeTmp(
         "#",
         (message, meta, notify) => {
@@ -84,6 +89,17 @@ Feature("dlx-web", () => {
       broker.publish("foo", {do: "nack"}, {correlationId}, done);
     });
 
+    And("no trello card found for correlationId", () => {
+      nock("https://api.trello.com")
+        .filteringPath(() => {
+          return "/1/search";
+        })
+        .get("/1/search")
+        .times(100)
+        .query(true)
+        .reply(200, {cards: []});
+    });
+
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
       const {messages} = await request.get(`${url}/api/messages`, {json: true});
@@ -103,6 +119,7 @@ Feature("dlx-web", () => {
       await page.click(".object-content > .variable-row > .click-to-edit > .click-to-edit-icon > svg");
 
       // erase nack and write ack
+      await page.keyboard.press("End");
       await page.keyboard.press("Backspace");
       await page.keyboard.press("Backspace");
       await page.keyboard.press("Backspace");
@@ -146,7 +163,11 @@ Feature("dlx-web", () => {
       await page._client.send("Network.clearBrowserCookies");
     });
 
-    Given("that there is a message handler", (done) => {
+    Given("no messages are on the DLX", async () => {
+      await clearMessages(url);
+    });
+
+    And("that there is a message handler", (done) => {
       broker.subscribeTmp(
         "#",
         (message, meta, notify) => {
@@ -166,6 +187,17 @@ Feature("dlx-web", () => {
 
     And("that there is a published message which is nacked", (done) => {
       broker.publish("foo", {do: "nack"}, {correlationId}, done);
+    });
+
+    And("no trello card found for correlationId", () => {
+      nock("https://api.trello.com")
+        .filteringPath(() => {
+          return "/1/search";
+        })
+        .get("/1/search")
+        .times(100)
+        .query(true)
+        .reply(200, {cards: []});
     });
 
     And("that a user navigates to dlx-web", async () => {
@@ -202,7 +234,11 @@ Feature("dlx-web", () => {
       await page._client.send("Network.clearBrowserCookies");
     });
 
-    Given("that there is a message handler", (done) => {
+    Given("no messages are on the DLX", async () => {
+      await clearMessages(url);
+    });
+
+    And("that there is a message handler", (done) => {
       broker.subscribeTmp(
         "#",
         (message, meta, notify) => {
@@ -224,6 +260,17 @@ Feature("dlx-web", () => {
       broker.publish("foo", {do: "nack"}, {correlationId}, done);
     });
 
+    And("no trello card found for correlationId", () => {
+      nock("https://api.trello.com")
+        .filteringPath(() => {
+          return "/1/search";
+        })
+        .get("/1/search")
+        .times(100)
+        .query(true)
+        .reply(200, {cards: []});
+    });
+
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
       const {messages} = await request.get(`${url}/api/messages`, {json: true});
@@ -235,7 +282,11 @@ Feature("dlx-web", () => {
     });
 
     Then("the correlation id should be a clickable link", async () => {
-      const hrefs = await page.$$eval("a", (as) => as.map((a) => {return {href: a.href, target: a.target}}));
+      const hrefs = await page.$$eval("a", (as) =>
+        as.map((a) => {
+          return {href: a.href, target: a.target};
+        })
+      );
       hrefs.length.should.eql(1);
       hrefs[0].href.should.eql(
         `${config.clientConfig.correlationIdUrlPrefix}${correlationId}${config.clientConfig.correlationIdUrlSuffix}`
@@ -257,6 +308,15 @@ Feature("dlx-web", () => {
     });
   });
 });
+
+async function clearMessages(url) {
+  const {messages} = await request.get(`${url}/api/messages`, {json: true});
+  await Promise.all(
+    messages.map(async (msg) => {
+      await request.post(`${url}/api/messages/${msg.id}/delete`, {json: true});
+    })
+  );
+}
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

@@ -15,5 +15,12 @@
   "clientConfig": {
     "correlationIdUrlPrefix": "http://prefix/",
     "correlationIdUrlSuffix": "/suffix"
+  },
+  "trello": {
+    "apiKey": "some-api-key",
+    "token": "some-token",
+    "boardId": "some-board-id",
+    "createOnListId": "some-list-id",
+    "labelIds": "some-label-id"
   }
 }

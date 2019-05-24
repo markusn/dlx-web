@@ -138,10 +138,64 @@ export default class App extends React.Component {
     const suffix = window.config.correlationIdUrlSuffix || "";
     if (prefix) {
       const corrUrl = `${prefix}${cell}${suffix}`;
-      return <a href={corrUrl} target="_blank">{cell}</a>;
+      return (
+        <a href={corrUrl} target="_blank">
+          {cell}
+        </a>
+      );
     } else {
       return cell;
     }
+  };
+
+  trelloFormatter = (trelloItem) => {
+    if (!trelloItem.shortUrl) {
+      return (
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            this.handleBtnClickAddTrelloCard(trelloItem);
+          }}
+        >
+          Create trello card
+        </button>
+      );
+    } else {
+      const link = (
+        <a href={trelloItem.shortUrl} target="_blank">
+          Trello card
+        </a>
+      );
+      const status = trelloItem.list ? <strong className="p-1">Status: {trelloItem.listName}</strong> : undefined;
+      const assigned = trelloItem.members ? <strong className="p-1">({trelloItem.members})</strong> : undefined;
+      return (
+        <div>
+          {link}
+          {status}
+          {assigned}
+        </div>
+      );
+    }
+  };
+
+  handleBtnClickAddTrelloCard = (trelloItem) => {
+    return axios.post(`/api/trello/${trelloItem.msg.id}`, {...trelloItem.msg}).then((card) => {
+      const {data} = this.state;
+      const newData = {};
+      Object.keys(data).forEach((msgId) => {
+        if (data[msgId].id === trelloItem.msg.id) {
+          newData[msgId] = {
+            ...data[msgId],
+            trello: {
+              shortUrl: card && card.data && card.data.shortUrl
+            }
+          };
+        } else {
+          newData[msgId] = {...data[msgId]};
+        }
+      });
+      this.setState({data: newData});
+    });
   };
 
   render() {
@@ -153,6 +207,10 @@ export default class App extends React.Component {
       {text: "Routing Key", dataField: "routingKey", sort: true},
       {text: "Correlation Id", dataField: "correlationId", sort: true, formatter: this.correlationIdFormatter}
     ];
+
+    if (window.config.trello) {
+      columns.push({text: "Trello", dataField: "trello", sort: true, formatter: this.trelloFormatter});
+    }
     const selectRowProp = {
       clickToExpand: true,
       selected: this.state.selected,
