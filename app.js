@@ -1,9 +1,5 @@
 const {init, shutdown} = require("./lib/server/index");
-
-const logger = {
-  info: (...args) => console.log("info:", ...args),
-  error: (...args) => console.log("error:", ...args)
-};
+const logger = require("./lib/server/dummy-logger");
 
 if (require.main === module) {
   init(logger, (app) => {
