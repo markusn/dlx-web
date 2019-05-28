@@ -13,6 +13,7 @@ RUN cd /tmp/app && yarn install
 ADD . /tmp/app/
 RUN cd /tmp/app && yarn pack --production --unsafe-perm -f app.tgz
 RUN cd /tmp/app && tar xzf app.tgz -C /tmp
+RUN cp /tmp/app/yarn.lock /tmp/package
 RUN cd /tmp/package && yarn install --production
 
 FROM node:10-alpine
