@@ -34,7 +34,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import BootstrapTable from "react-bootstrap-table-next";
-import axios from "axios";
 
 import ReactJson from "react-json-view";
 
@@ -80,7 +79,14 @@ export default class App extends React.Component {
     const promises = this.state.selected.map((msgId) => {
       const row = data[msgId];
       if (!row) console.log("no data for msg with id", msgId, data);
-      return axios.post(`/api/messages/${msgId}/resend`, row.message);
+      return fetch(`/api/messages/${msgId}/resend`, {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        method: "post",
+        body: JSON.stringify(row.message)
+      }).then((res) => res.json());
     });
     if (promises.length > 0) {
       Promise.all(promises).then(() => {
@@ -92,7 +98,7 @@ export default class App extends React.Component {
 
   handleBtnClickDelete = () => {
     const promises = this.state.selected.map((msgId) => {
-      return axios.post(`/api/messages/${msgId}/delete`);
+      return fetch(`/api/messages/${msgId}/delete`, {method: "post"});
     });
     Promise.all(promises).then(() => {
       console.log("deleted", this.state.selected);
@@ -179,23 +185,32 @@ export default class App extends React.Component {
   };
 
   handleBtnClickAddTrelloCard = (trelloItem) => {
-    return axios.post(`/api/trello/${trelloItem.msg.id}`, {...trelloItem.msg}).then((card) => {
-      const {data} = this.state;
-      const newData = {};
-      Object.keys(data).forEach((msgId) => {
-        if (data[msgId].id === trelloItem.msg.id) {
-          newData[msgId] = {
-            ...data[msgId],
-            trello: {
-              shortUrl: card && card.data && card.data.shortUrl
-            }
-          };
-        } else {
-          newData[msgId] = {...data[msgId]};
-        }
+    return fetch(`/api/trello/${trelloItem.msg.id}`, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      method: "post",
+      body: JSON.stringify({...trelloItem.msg})
+    })
+      .then((res) => res.json())
+      .then((card) => {
+        const {data} = this.state;
+        const newData = {};
+        Object.keys(data).forEach((msgId) => {
+          if (data[msgId].id === trelloItem.msg.id) {
+            newData[msgId] = {
+              ...data[msgId],
+              trello: {
+                shortUrl: card && card.data && card.data.shortUrl
+              }
+            };
+          } else {
+            newData[msgId] = {...data[msgId]};
+          }
+        });
+        this.setState({data: newData});
       });
-      this.setState({data: newData});
-    });
   };
 
   render() {

@@ -20,8 +20,6 @@
   "author": "Markus Ekholm <markus@botten.org>",
   "license": "BSD-3-Clause",
   "dependencies": {
-    "async": "^2.6.1",
-    "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
     "basic-auth-connect": "^1.0.0",
     "body-parser": "^1.18.3",
