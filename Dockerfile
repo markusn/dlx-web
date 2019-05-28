@@ -1,4 +1,6 @@
-FROM node:10 as intermediate
+FROM node:10-alpine as intermediate
+
+RUN apk add --update --no-cache tzdata
 
 # First add just the package json file and do in-container install
 # This way, we only rebuild deps if package.json is changed
@@ -13,8 +15,9 @@ RUN cd /tmp/app && yarn pack --production --unsafe-perm -f app.tgz
 RUN cd /tmp/app && tar xzf app.tgz -C /tmp
 RUN cd /tmp/package && yarn install --production
 
-FROM node:10
-RUN ln -fs /usr/share/zoneinfo/Europe/Stockholm /etc/localtime && dpkg-reconfigure --frontend noninteractive tzdata
+FROM node:10-alpine
+COPY --from=intermediate /usr/share/zoneinfo/Europe/Stockholm /etc/localtime
+RUN echo "Europe/Stockholm" > /etc/timezone
 
 ENV NODE_ENV=production
 ENV NODE_HEAPDUMP_OPTIONS=nosignal
