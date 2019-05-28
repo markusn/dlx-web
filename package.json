@@ -9,10 +9,9 @@
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
     "server": "nodemon app.js",
     "lint": "eslint --ext .js --ext .jsx .",
-    "lint-fix": "eslint --ext .js --ext .jsx . --fix",
     "prepack": "webpack --mode production",
     "dev": "concurrently \"yarn run server\" \"yarn run client\"",
-    "test": "webpack && mocha --exit && eslint . --cache"
+    "test": "webpack && mocha --exit && eslint --ext .js --ext .jsx --cache ."
   },
   "repository": {
     "type": "git",

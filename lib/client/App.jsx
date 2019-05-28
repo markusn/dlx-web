@@ -139,7 +139,7 @@ export default class App extends React.Component {
     if (prefix) {
       const corrUrl = `${prefix}${cell}${suffix}`;
       return (
-        <a href={corrUrl} target="_blank">
+        <a href={corrUrl} target="_blank" rel="noopener noreferrer">
           {cell}
         </a>
       );
@@ -162,7 +162,7 @@ export default class App extends React.Component {
       );
     } else {
       const link = (
-        <a href={trelloItem.shortUrl} target="_blank">
+        <a href={trelloItem.shortUrl} target="_blank" rel="noopener noreferrer">
           Trello card
         </a>
       );
