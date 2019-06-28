@@ -2642,9 +2642,9 @@ execa@^1.0.0:
     signal-exit "^3.0.0"
     strip-eof "^1.0.0"
 
-exp-amqp-connection@BonnierNews/exp-amqp-connection#v2.9.0:
-  version "2.9.0"
-  resolved "https://codeload.github.com/BonnierNews/exp-amqp-connection/tar.gz/215537d8793668f9e5d1805135665a51767467a4"
+exp-amqp-connection@BonnierNews/exp-amqp-connection#v3.0.0:
+  version "3.0.0"
+  resolved "https://codeload.github.com/BonnierNews/exp-amqp-connection/tar.gz/4e21c3201a26168dae5e5f07f96643d51b6f188e"
   dependencies:
     amqplib "^0.5.2"
     async "^0.9.2"
