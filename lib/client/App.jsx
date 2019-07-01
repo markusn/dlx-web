@@ -34,7 +34,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import BootstrapTable from "react-bootstrap-table-next";
+import cellEditFactory from "react-bootstrap-table2-editor";
 import axios from "axios";
+
+const cellEdit = cellEditFactory({
+  mode: "dbclick"
+});
 
 import ReactJson from "react-json-view";
 
@@ -80,7 +85,11 @@ export default class App extends React.Component {
     const promises = this.state.selected.map((msgId) => {
       const row = data[msgId];
       if (!row) console.log("no data for msg with id", msgId, data);
-      return axios.post(`/api/messages/${msgId}/resend`, row.message);
+      const params = {};
+      if (window.config.editRoutingKey) {
+        params.routingKey = row.routingKey;
+      }
+      return axios.post(`/api/messages/${msgId}/resend`, row.message, {params});
     });
     if (promises.length > 0) {
       Promise.all(promises).then(() => {
@@ -201,15 +210,32 @@ export default class App extends React.Component {
   render() {
     const {data} = this.state;
     const columns = [
-      {text: "First occurred", dataField: "ts", sort: true},
-      {text: "Id", dataField: "id", hidden: true},
-      {text: "Queues", dataField: "queues", sort: true},
-      {text: "Routing Key", dataField: "routingKey", sort: true},
-      {text: "Correlation Id", dataField: "correlationId", sort: true, formatter: this.correlationIdFormatter}
+      {text: "First occurred", dataField: "ts", sort: true, editable: false},
+      {text: "Id", dataField: "id", hidden: true, editable: false},
+      {text: "Queues", dataField: "queues", sort: true, editable: false},
+      {
+        text: "Routing Key",
+        dataField: "routingKey",
+        sort: true,
+        editable: window.config.editRoutingKey,
+        validator: (newValue) => {
+          if (!newValue) {
+            return {valid: false, message: "Routing key cannot be empty"};
+          }
+          return true;
+        }
+      },
+      {
+        text: "Correlation Id",
+        dataField: "correlationId",
+        sort: true,
+        formatter: this.correlationIdFormatter,
+        editable: false
+      }
     ];
 
     if (window.config.trello) {
-      columns.push({text: "Trello", dataField: "trello", sort: true, formatter: this.trelloFormatter});
+      columns.push({text: "Trello", dataField: "trello", sort: true, formatter: this.trelloFormatter, editable: false});
     }
     const selectRowProp = {
       clickToExpand: true,
@@ -249,6 +275,7 @@ export default class App extends React.Component {
           data={Object.values(data)}
           keyField="id"
           columns={columns}
+          cellEdit={cellEdit}
           selectRow={selectRowProp}
           expandRow={expandRow}
           headerClasses="thead-light"

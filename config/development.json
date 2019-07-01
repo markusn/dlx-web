@@ -3,5 +3,6 @@
     "url": "amqp://localhost:5672",
     "exchange": "DLX"
   },
-  "dlxQueue": "dead-letter-manual"
+  "dlxQueue": "dead-letter-manual",
+  "routingKeyHeader": "x-routing-key"
 }

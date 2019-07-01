@@ -22,5 +22,6 @@
     "boardId": "some-board-id",
     "createOnListId": "some-list-id",
     "labelIds": "some-label-id"
-  }
+  },
+  "routingKeyHeader": "x-routing-key"
 }

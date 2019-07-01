@@ -5308,6 +5308,11 @@ react-bootstrap-table-next@^2.1.0:
     classnames "2.2.5"
     underscore "1.9.1"
 
+react-bootstrap-table2-editor@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/react-bootstrap-table2-editor/-/react-bootstrap-table2-editor-1.2.4.tgz#4c90d80cc30c791c764ced759df6448efbc29502"
+  integrity sha512-egN4Qxf3YinOoNrTZW9narTsaD8GJN1RWqbOrTzuQfWDIfOe/k1q7AEXqEH7Jfj03WDdw2w4Zm4tus/BILB7Bw==
+
 react-dom@^16.5.2:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"

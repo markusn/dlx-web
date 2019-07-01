@@ -72,14 +72,14 @@ Feature("dlx-web", () => {
         "#",
         (message, meta, notify) => {
           if (message.do === "nack") {
-            nacked.push(message);
+            nacked.push({message, meta});
             return notify.nack(false);
           }
           if (message.do === "ack") {
-            acked.push(message);
+            acked.push({message, meta});
             return notify.ack();
           }
-          return keep.push(message);
+          return keep.push({message, meta});
         },
         done
       );
@@ -140,7 +140,114 @@ Feature("dlx-web", () => {
     Then("the message should have been ack:ed (as it is sent back with do set to ack)", async () => {
       await sleep(1000);
       acked.length.should.eql(1);
-      acked[0].do.should.eql("ack");
+      acked[0].message.do.should.eql("ack");
+      acked[0].meta.properties.headers["x-routing-key"].should.eql("foo");
+    });
+
+    And("there should be no messages left", async () => {
+      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      messages.length.should.eql(0);
+    });
+
+    after((done) => broker.unsubscribeAll(done));
+  });
+
+  Scenario("sending a message back to the queue with a different routing key", () => {
+    const nacked = [];
+    const acked = [];
+    const keep = [];
+    let page;
+    const correlationId = uuid.v4();
+
+    before(async () => {
+      page = await browser.newPage();
+      await page._client.send("Network.clearBrowserCookies");
+    });
+
+    Given("no messages are on the DLX", async () => {
+      await clearMessages(url);
+    });
+
+    And("that there is a message handler", (done) => {
+      broker.subscribeTmp(
+        "#",
+        (message, meta, notify) => {
+          const routingKey = meta.properties.headers[config.routingKeyHeader] || meta.fields.routingKey;
+          if (routingKey === "ack") {
+            acked.push({message, meta});
+            return notify.ack();
+          }
+          if (routingKey === "nack") {
+            nacked.push({message, meta});
+            return notify.nack(false);
+          }
+          return keep.push({message, meta});
+        },
+        done
+      );
+    });
+
+    And("that there is a published message which is nacked", (done) => {
+      broker.publish("nack", {foo: "bar"}, {correlationId}, done);
+    });
+
+    And("no trello card found for correlationId", () => {
+      nock("https://api.trello.com")
+        .filteringPath(() => {
+          return "/1/search";
+        })
+        .get("/1/search")
+        .times(100)
+        .query(true)
+        .reply(200, {cards: []});
+    });
+
+    And("the message is handled by dlx-web", async () => {
+      await sleep(500);
+      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      messages.length.should.eql(1);
+    });
+
+    And("that a user navigates to dlx-web", async () => {
+      await page.goto(url, {waitUntil: "domcontentloaded"});
+    });
+
+    When("the user edits the message routing key sends it back to the queue", async () => {
+      // bring out the editor
+      const selector = await page.waitForSelector(
+        ".react-bootstrap-table > table > tbody > tr:nth-child(1) > td:nth-child(4)"
+      );
+      await selector.click({clickCount: 2});
+
+      // erase nack and write ack
+      await page.keyboard.press("End");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.type("ack");
+      await page.keyboard.press("Enter");
+
+      // click the checkbox
+      await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
+      await page.click(".table > tbody > tr > td > .selection-input-4");
+
+      // click send back to queue
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-primary");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-primary");
+    });
+
+    Then("the message should have been ack:ed (as it is sent back with its' routing key set to ack)", async () => {
+      await sleep(1000);
+      acked.length.should.eql(1);
+      acked[0].message.foo.should.eql("bar");
+      acked[0].meta.properties.headers["x-routing-key"].should.eql("ack");
+    });
+
+    And("the nacked message should have the expected routing key", () => {
+      nacked.length.should.eql(1);
+      nacked[0].message.foo.should.eql("bar");
+      nacked[0].meta.fields.routingKey.should.eql("nack");
     });
 
     And("there should be no messages left", async () => {
@@ -172,14 +279,14 @@ Feature("dlx-web", () => {
         "#",
         (message, meta, notify) => {
           if (message.do === "nack") {
-            nacked.push(message);
+            nacked.push({message, meta});
             return notify.nack(false);
           }
           if (message.do === "ack") {
-            acked.push(message);
+            acked.push({message, meta});
             return notify.ack();
           }
-          return keep.push(message);
+          return keep.push({message, meta});
         },
         done
       );
@@ -243,14 +350,14 @@ Feature("dlx-web", () => {
         "#",
         (message, meta, notify) => {
           if (message.do === "nack") {
-            nacked.push(message);
+            nacked.push({message, meta});
             return notify.nack(false);
           }
           if (message.do === "ack") {
-            acked.push(message);
+            acked.push({message, meta});
             return notify.ack();
           }
-          return keep.push(message);
+          return keep.push({message, meta});
         },
         done
       );
