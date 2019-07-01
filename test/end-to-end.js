@@ -389,16 +389,109 @@ Feature("dlx-web", () => {
     });
 
     Then("the correlation id should be a clickable link", async () => {
+      await page.waitForSelector("a");
       const hrefs = await page.$$eval("a", (as) =>
         as.map((a) => {
           return {href: a.href, target: a.target};
         })
       );
-      hrefs.length.should.eql(1);
+      hrefs.length.should.eql(1, await page.evaluate(() => document.body.innerHTML));
       hrefs[0].href.should.eql(
         `${config.clientConfig.correlationIdUrlPrefix}${correlationId}${config.clientConfig.correlationIdUrlSuffix}`
       );
       hrefs[0].target.should.eql("_blank");
+    });
+
+    after(async () => {
+      // click the checkbox
+      await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
+      await page.click(".table > tbody > tr > td > .selection-input-4");
+      // click delete
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+    });
+
+    after((done) => {
+      broker.unsubscribeAll(done);
+    });
+  });
+
+  Scenario("extra configured column should display text from message", () => {
+    const nacked = [];
+    const acked = [];
+    const keep = [];
+    let page;
+    const correlationId = uuid.v4();
+
+    before(async () => {
+      page = await browser.newPage();
+      await page._client.send("Network.clearBrowserCookies");
+    });
+
+    Given("no messages are on the DLX", async () => {
+      await clearMessages(url);
+    });
+
+    And("that there is a message handler", (done) => {
+      broker.subscribeTmp(
+        "#",
+        (message, meta, notify) => {
+          if (message.do === "nack") {
+            nacked.push({message, meta});
+            return notify.nack(false);
+          }
+          if (message.do === "ack") {
+            acked.push({message, meta});
+            return notify.ack();
+          }
+          return keep.push({message, meta});
+        },
+        done
+      );
+    });
+
+    And("that there is a published message which is nacked", (done) => {
+      broker.publish("foo", {do: "nack", errors: "some error"}, {correlationId}, done);
+    });
+
+    And("no trello card found for correlationId", () => {
+      nock("https://api.trello.com")
+        .filteringPath(() => {
+          return "/1/search";
+        })
+        .get("/1/search")
+        .times(100)
+        .query(true)
+        .reply(200, {cards: []});
+    });
+
+    And("the message is handled by dlx-web", async () => {
+      await sleep(500);
+      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      messages.length.should.eql(1);
+    });
+
+    When("that a user navigates to dlx-web", async () => {
+      await page.goto(url, {waitUntil: "domcontentloaded"});
+    });
+
+    Then("the configured column should be present", async () => {
+      await page.waitForSelector("th");
+      const headings = await page.$$eval("th", (ths) =>
+        ths.map((th) => {
+          return {text: th.textContent};
+        })
+      );
+
+      headings.pop().text.should.eql("Error");
+
+      await page.waitForSelector("tr td");
+      const rowTexts = await page.$$eval("tr td", (trs) =>
+        trs.map((tr) => {
+          return {text: tr.textContent};
+        })
+      );
+      rowTexts.pop().text.should.eql('"some error"');
     });
 
     after(async () => {

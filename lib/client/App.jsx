@@ -237,6 +237,19 @@ export default class App extends React.Component {
     if (window.config.trello) {
       columns.push({text: "Trello", dataField: "trello", sort: true, formatter: this.trelloFormatter, editable: false});
     }
+
+    if (window.config.extraCols && window.config.extraCols.length) {
+      window.config.extraCols.forEach((colConf) => {
+        columns.push({
+          text: colConf.text,
+          dataField: "message",
+          formatter: (message) => {
+            return JSON.stringify(message[colConf.key]);
+          },
+          editable: false
+        });
+      });
+    }
     const selectRowProp = {
       clickToExpand: true,
       selected: this.state.selected,
