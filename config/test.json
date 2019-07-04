@@ -14,7 +14,13 @@
   "dlxQueue": "dead-letter-manual-test",
   "clientConfig": {
     "correlationIdUrlPrefix": "http://prefix/",
-    "correlationIdUrlSuffix": "/suffix"
+    "correlationIdUrlSuffix": "/suffix",
+    "extraCols": [
+      {
+        "text": "Error",
+        "key": "errors"
+      }
+    ]
   },
   "trello": {
     "apiKey": "some-api-key",

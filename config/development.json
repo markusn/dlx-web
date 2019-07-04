@@ -4,5 +4,13 @@
     "exchange": "DLX"
   },
   "dlxQueue": "dead-letter-manual",
-  "routingKeyHeader": "x-routing-key"
+  "routingKeyHeader": "x-routing-key",
+  "clientConfig": {
+    "extraCols": [
+      {
+        "text": "Error",
+        "key": "errors"
+      }
+    ]
+  }
 }
