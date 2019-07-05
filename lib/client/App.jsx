@@ -244,7 +244,7 @@ export default class App extends React.Component {
           text: colConf.text,
           dataField: "message",
           formatter: (message) => {
-            return JSON.stringify(message[colConf.key]);
+            return JSON.stringify(message[colConf.key], null, " ").replace(/\n/g, "");
           },
           editable: false
         });
