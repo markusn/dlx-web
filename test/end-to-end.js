@@ -112,8 +112,8 @@ Feature("dlx-web", () => {
 
     When("the user edits the message and sends it back to the queue", async () => {
       // bring out the editor
-      await page.waitForSelector(".react-bootstrap-table > .table > tbody > tr > td:nth-child(2)");
-      await page.click(".react-bootstrap-table > .table > tbody > tr > td:nth-child(2)");
+      await page.waitForSelector(".table > tbody > tr > td:nth-child(2)");
+      await page.click(".table > tbody > tr > td:nth-child(2)");
       await page.waitForSelector(".object-content > .variable-row > .click-to-edit > .click-to-edit-icon > svg");
       await page.click(".string-value");
       await page.click(".object-content > .variable-row > .click-to-edit > .click-to-edit-icon > svg");
@@ -214,9 +214,7 @@ Feature("dlx-web", () => {
 
     When("the user edits the message routing key sends it back to the queue", async () => {
       // bring out the editor
-      const selector = await page.waitForSelector(
-        ".react-bootstrap-table > table > tbody > tr:nth-child(1) > td:nth-child(4)"
-      );
+      const selector = await page.waitForSelector(".table > tbody > tr > td:nth-child(4)");
       await selector.click({clickCount: 2});
 
       // erase nack and write ack
