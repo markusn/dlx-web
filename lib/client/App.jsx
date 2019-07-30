@@ -280,9 +280,38 @@ export default class App extends React.Component {
       }
     };
 
+    function HeaderLinks() {
+      if (!window.config.header || !window.config.header.links) {
+        return null;
+      }
+
+      const links = window.config.header.links.map((link, index) => {
+        return (
+          <li className="list-inline-item" key={index}>
+            <a href={link.href} target="blank" rel="noopener noreferrer">
+              {link.text}
+            </a>
+          </li>
+        );
+      });
+
+      return <ul className="list-inline">{links}</ul>;
+    }
+
+    function Header() {
+      return (
+        <div className="d-flex">
+          <h1 className="flex-fill">DLX Web ({window.envName.toUpperCase()})</h1>
+          <div className="p-2 flex-fill">
+            <HeaderLinks />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div>
-        <h1>DLX Web ({window.envName.toUpperCase()})</h1>
+        <Header />
         <BootstrapTable
           bootstrap4={true}
           data={Object.values(data)}
