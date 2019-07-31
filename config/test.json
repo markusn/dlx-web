@@ -20,7 +20,19 @@
         "text": "Error",
         "key": "errors"
       }
-    ]
+    ],
+    "header": {
+      "links": [
+        {
+          "text": "Some cool wiki",
+          "href": "https://google.com/"
+        },
+        {
+          "text": "Some other link",
+          "href": "https://stackoverflow.com/"
+        }
+      ]
+    }
   },
   "trello": {
     "apiKey": "some-api-key",

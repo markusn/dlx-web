@@ -387,8 +387,8 @@ Feature("dlx-web", () => {
     });
 
     Then("the correlation id should be a clickable link", async () => {
-      await page.waitForSelector("a");
-      const hrefs = await page.$$eval("a", (as) =>
+      await page.waitForSelector(".table a");
+      const hrefs = await page.$$eval(".table a", (as) =>
         as.map((a) => {
           return {href: a.href, target: a.target};
         })
@@ -499,6 +499,42 @@ Feature("dlx-web", () => {
       // click delete
       await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
       await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+    });
+
+    after((done) => {
+      broker.unsubscribeAll(done);
+    });
+  });
+
+  Scenario("configured header links should be displayed", () => {
+    let page;
+
+    before(async () => {
+      page = await browser.newPage();
+      await page._client.send("Network.clearBrowserCookies");
+    });
+
+    When("a user navigates to dlx-web", async () => {
+      await page.goto(url, {waitUntil: "domcontentloaded"});
+    });
+
+    Then("the configured header links should be present", async () => {
+      await page.waitForSelector(".d-flex a");
+      const links = await page.$$eval(".d-flex a", (link) =>
+        link.map((l) => {
+          return {text: l.textContent, href: l.href, target: l.target};
+        })
+      );
+
+      links.length.should.eql(2, await page.evaluate(() => document.body.innerHTML));
+
+      links.should.eql(
+        [
+          {text: "Some cool wiki", href: "https://google.com/", target: "blank"},
+          {text: "Some other link", href: "https://stackoverflow.com/", target: "blank"}
+        ],
+        JSON.stringify(links)
+      );
     });
 
     after((done) => {
