@@ -35,6 +35,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import BootstrapTable from "react-bootstrap-table-next";
 import cellEditFactory from "react-bootstrap-table2-editor";
+import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
 import axios from "axios";
 
 const cellEdit = cellEditFactory({
@@ -218,6 +219,7 @@ export default class App extends React.Component {
         dataField: "routingKey",
         sort: true,
         editable: window.config.editRoutingKey,
+        filter: textFilter(),
         validator: (newValue) => {
           if (!newValue) {
             return {valid: false, message: "Routing key cannot be empty"};
@@ -320,6 +322,7 @@ export default class App extends React.Component {
           cellEdit={cellEdit}
           selectRow={selectRowProp}
           expandRow={expandRow}
+          filter={filterFactory()}
           headerClasses="thead-light"
         />
         <div className="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">

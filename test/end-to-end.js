@@ -327,6 +327,87 @@ Feature("dlx-web", () => {
     after((done) => broker.unsubscribeAll(done));
   });
 
+  Scenario("filtering and deleting message", () => {
+    const nacked = [];
+    const acked = [];
+    const keep = [];
+    let page;
+    const correlationId = uuid.v4();
+    const correlationId2 = uuid.v4();
+
+    before(async () => {
+      page = await browser.newPage();
+      await page._client.send("Network.clearBrowserCookies");
+    });
+
+    Given("no messages are on the DLX", async () => {
+      await clearMessages(url);
+    });
+
+    And("that there is a message handler", (done) => {
+      broker.subscribeTmp(
+        "#",
+        (message, meta, notify) => {
+          if (message.do === "nack") {
+            nacked.push({message, meta});
+            return notify.nack(false);
+          }
+          if (message.do === "ack") {
+            acked.push({message, meta});
+            return notify.ack();
+          }
+          return keep.push({message, meta});
+        },
+        done
+      );
+    });
+
+    And("that there two messages published message which are nacked", (done) => {
+      broker.publish("foo", {do: "nack", correlationId}, {correlationId}, () => {
+        broker.publish("bar", {do: "nack", correlationId: correlationId2}, {correlationId2}, done);
+      });
+    });
+
+    And("no trello card found for correlationId", () => {
+      nock("https://api.trello.com")
+        .filteringPath(() => {
+          return "/1/search";
+        })
+        .get("/1/search")
+        .times(100)
+        .query(true)
+        .reply(200, {cards: []});
+    });
+
+    And("that a user navigates to dlx-web", async () => {
+      await page.goto(url, {waitUntil: "domcontentloaded"});
+    });
+
+    When("the user filters messages on routing key foo, marks all and deletes", async () => {
+      await page.waitForSelector(".text-filter");
+      await page.click(".text-filter");
+      await page.keyboard.type("foo");
+      await page.keyboard.press("Enter");
+      await sleep(500);
+      // select all
+      await page.click("#root > div > div:nth-child(2) > table > thead > tr > th:nth-child(1) > input");
+      // click delete
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+    });
+
+    Then("the foo message should be gone", async () => {
+      await sleep(500);
+      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      messages.length.should.eql(1);
+      const msg = messages[0];
+      msg.routingKey.should.eql("bar");
+      msg.message.correlationId.should.eql(correlationId2);
+    });
+
+    after((done) => broker.unsubscribeAll(done));
+  });
+
   Scenario("message correlationId should be a clickable link", () => {
     const nacked = [];
     const acked = [];

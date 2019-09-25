@@ -35,6 +35,7 @@
     "react": "^16.5.2",
     "react-bootstrap-table-next": "^2.1.0",
     "react-bootstrap-table2-editor": "~1.2.4",
+    "react-bootstrap-table2-filter": "^1.2.0",
     "react-dom": "^16.5.2",
     "react-json-view": "^1.19.1",
     "request": "^2.88.0",

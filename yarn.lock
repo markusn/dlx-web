@@ -5446,6 +5446,11 @@ react-bootstrap-table2-editor@~1.2.4:
   resolved "https://registry.yarnpkg.com/react-bootstrap-table2-editor/-/react-bootstrap-table2-editor-1.2.4.tgz#4c90d80cc30c791c764ced759df6448efbc29502"
   integrity sha512-egN4Qxf3YinOoNrTZW9narTsaD8GJN1RWqbOrTzuQfWDIfOe/k1q7AEXqEH7Jfj03WDdw2w4Zm4tus/BILB7Bw==
 
+react-bootstrap-table2-filter@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-bootstrap-table2-filter/-/react-bootstrap-table2-filter-1.2.0.tgz#7008b33cfe7d04a334c304204091d79847acc59b"
+  integrity sha512-wvnBsD1YshETj9+q7ci6m03WOuI9WYM1DRGp/q0ouhLNbs6xoILcXRS5m7zIMn6+H68cAuuaDwq7q4DwenVXkg==
+
 react-dom@^16.5.2:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"
