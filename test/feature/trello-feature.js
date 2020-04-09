@@ -139,7 +139,10 @@ Feature("Trello", () => {
           id: "some-trello-id-2",
           shortUrl: "http://some-short-url",
           list: {name: "some-list-name"},
-          members: [{id: "some-member-id", initials: "AA"}, {id: "some-member-id-2", initials: "BB"}]
+          members: [
+            {id: "some-member-id", initials: "AA"},
+            {id: "some-member-id-2", initials: "BB"}
+          ]
         });
     });
 
