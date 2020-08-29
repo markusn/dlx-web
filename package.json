@@ -29,7 +29,7 @@
     "exp-amqp-connection": "BonnierNews/exp-amqp-connection#v3.0.0",
     "exp-config": "^2.0.1",
     "express": "^4.16.3",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "json-stable-stringify": "^1.0.1",
     "moment": "^2.24.0",
     "popper.js": "^1.14.7",
