@@ -314,8 +314,8 @@ Feature("dlx-web", () => {
       await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
       await page.click(".table > tbody > tr > td > .selection-input-4");
       // click delete
-      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
-      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-danger");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-danger");
     });
 
     Then("the message should be gone", async () => {
@@ -392,8 +392,8 @@ Feature("dlx-web", () => {
       // select all
       await page.click("#root > div > div:nth-child(2) > table > thead > tr > th:nth-child(1) > input");
       // click delete
-      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
-      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-danger");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-danger");
     });
 
     Then("the foo message should be gone", async () => {
@@ -486,8 +486,8 @@ Feature("dlx-web", () => {
       await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
       await page.click(".table > tbody > tr > td > .selection-input-4");
       // click delete
-      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
-      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-danger");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-danger");
     });
 
     after((done) => {
@@ -578,8 +578,8 @@ Feature("dlx-web", () => {
       await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
       await page.click(".table > tbody > tr > td > .selection-input-4");
       // click delete
-      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
-      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-secondary");
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-danger");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-danger");
     });
 
     after((done) => {

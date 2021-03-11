@@ -33,6 +33,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 //import Popper from "popper.js";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
+import "./app.css";
 import BootstrapTable from "react-bootstrap-table-next";
 import cellEditFactory from "react-bootstrap-table2-editor";
 import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
@@ -49,7 +50,8 @@ export default class App extends React.Component {
     super();
     this.state = {
       data: {},
-      selected: []
+      selected: [],
+      darkMode: window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
     };
   }
 
@@ -257,7 +259,7 @@ export default class App extends React.Component {
       selected: this.state.selected,
       onSelect: this.handleOnSelect,
       onSelectAll: this.handleOnSelectAll,
-      bgColor: "#00BFFF",
+      bgColor: this.state.darkMode ? "#d2992226" : "#00BFFF",
       mode: "checkbox" // single row selection
     };
 
@@ -276,6 +278,7 @@ export default class App extends React.Component {
               onEdit={(o) => this.handleMessageEdit(o, row.id)}
               onAdd={(o) => this.handleMessageEdit(o, row.id)}
               onDelete={(o) => this.handleMessageEdit(o, row.id)}
+              theme={this.state.darkMode ? "twilight" : "rjv-default"}
             />
           </div>
         );
@@ -323,16 +326,16 @@ export default class App extends React.Component {
           selectRow={selectRowProp}
           expandRow={expandRow}
           filter={filterFactory()}
-          headerClasses="thead-light"
+          classes={this.state.darkMode ? "table-dark" : "table-light-bordered"}
         />
-        <div className="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div className="btn-toolbar mb-2" role="toolbar" aria-label="Toolbar with button groups">
           <div className="btn-group mr-2" role="group" aria-label="First group">
             <button className="btn btn-primary" onClick={this.handleBtnClickResend}>
               Resend
             </button>
           </div>
-          <div className="btn-group mr-2" role="group" aria-label="Secondary group">
-            <button className="btn btn-secondary" onClick={this.handleBtnClickDelete}>
+          <div className="btn-group mr-2 ml-4" role="group" aria-label="Secondary group">
+            <button className="btn btn-danger" onClick={this.handleBtnClickDelete}>
               Delete
             </button>
           </div>
