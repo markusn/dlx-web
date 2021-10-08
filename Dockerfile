@@ -1,4 +1,4 @@
-FROM node:12-alpine as intermediate
+FROM node:14-alpine as intermediate
 
 RUN apk add --update --no-cache tzdata
 
@@ -16,7 +16,7 @@ RUN cd /tmp/app && tar xzf app.tgz -C /tmp
 RUN cp /tmp/app/yarn.lock /tmp/package
 RUN cd /tmp/package && yarn install --production
 
-FROM node:12-alpine
+FROM node:14-alpine
 COPY --from=intermediate /usr/share/zoneinfo/Europe/Stockholm /etc/localtime
 RUN echo "Europe/Stockholm" > /etc/timezone
 
