@@ -4,13 +4,13 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const outputDirectory = "dist";
 
 module.exports = {
-  entry: ["babel-polyfill", "./lib/client/App.jsx"],
+  entry: [ "babel-polyfill", "./lib/client/App.jsx" ],
   output: {
     path: path.join(__dirname, outputDirectory),
-    filename: "bundle.js"
+    filename: "bundle.js",
   },
   resolve: {
-    extensions: [".js", ".jsx"]
+    extensions: [ ".js", ".jsx" ],
   },
   module: {
     rules: [
@@ -18,32 +18,32 @@ module.exports = {
         test: /\.jsx$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
+          loader: "babel-loader",
+        },
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
+          loader: "babel-loader",
+        },
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: [ "style-loader", "css-loader" ],
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        loader: "url-loader?limit=100000"
-      }
-    ]
+        loader: "url-loader?limit=100000",
+      },
+    ],
   },
   devServer: {
     port: 3001,
     open: true,
     proxy: {
-      "/api": "http://localhost:3000"
-    }
+      "/api": "http://localhost:3000",
+    },
   },
-  plugins: [new CleanWebpackPlugin([outputDirectory])]
+  plugins: [ new CleanWebpackPlugin([ outputDirectory ]) ],
 };

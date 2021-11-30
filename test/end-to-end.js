@@ -6,21 +6,21 @@ const initConnection = require("exp-amqp-connection");
 const uuid = require("uuid");
 
 const puppeteerOpts = {
-  args: ["--disable-features=site-per-process"],
+  args: [ "--disable-features=site-per-process" ],
   ignoreHTTPSErrors: true,
-  headless: true
-  //slowMo: 50
+  headless: true,
+  // slowMo: 50
 };
 
-const {init, shutdown} = require("../lib/server");
+const { init, shutdown } = require("../lib/server");
 
 const behavior = Object.assign(
   {
     confirm: true,
     ack: true,
-    prefetch: 200
+    prefetch: 200,
   },
-  config.testRabbit
+  config.testRabbit,
 );
 
 Feature("dlx-web", () => {
@@ -72,21 +72,21 @@ Feature("dlx-web", () => {
         "#",
         (message, meta, notify) => {
           if (message.do === "nack") {
-            nacked.push({message, meta});
+            nacked.push({ message, meta });
             return notify.nack(false);
           }
           if (message.do === "ack") {
-            acked.push({message, meta});
+            acked.push({ message, meta });
             return notify.ack();
           }
-          return keep.push({message, meta});
+          return keep.push({ message, meta });
         },
-        done
+        done,
       );
     });
 
     And("that there is a published message which is nacked", (done) => {
-      broker.publish("foo", {do: "nack"}, {correlationId}, done);
+      broker.publish("foo", { do: "nack" }, { correlationId }, done);
     });
 
     And("no trello card found for correlationId", () => {
@@ -97,17 +97,17 @@ Feature("dlx-web", () => {
         .get("/1/search")
         .times(100)
         .query(true)
-        .reply(200, {cards: []});
+        .reply(200, { cards: [] });
     });
 
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
-      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      const { messages } = await request.get(`${url}/api/messages`, { json: true });
       messages.length.should.eql(1);
     });
 
     And("that a user navigates to dlx-web", async () => {
-      await page.goto(url, {waitUntil: "domcontentloaded"});
+      await page.goto(url, { waitUntil: "domcontentloaded" });
     });
 
     When("the user edits the message and sends it back to the queue", async () => {
@@ -145,7 +145,7 @@ Feature("dlx-web", () => {
     });
 
     And("there should be no messages left", async () => {
-      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      const { messages } = await request.get(`${url}/api/messages`, { json: true });
       messages.length.should.eql(0);
     });
 
@@ -174,21 +174,21 @@ Feature("dlx-web", () => {
         (message, meta, notify) => {
           const routingKey = meta.properties.headers[config.routingKeyHeader] || meta.fields.routingKey;
           if (routingKey === "ack") {
-            acked.push({message, meta});
+            acked.push({ message, meta });
             return notify.ack();
           }
           if (routingKey === "nack") {
-            nacked.push({message, meta});
+            nacked.push({ message, meta });
             return notify.nack(false);
           }
-          return keep.push({message, meta});
+          return keep.push({ message, meta });
         },
-        done
+        done,
       );
     });
 
     And("that there is a published message which is nacked", (done) => {
-      broker.publish("nack", {foo: "bar"}, {correlationId}, done);
+      broker.publish("nack", { foo: "bar" }, { correlationId }, done);
     });
 
     And("no trello card found for correlationId", () => {
@@ -199,23 +199,23 @@ Feature("dlx-web", () => {
         .get("/1/search")
         .times(100)
         .query(true)
-        .reply(200, {cards: []});
+        .reply(200, { cards: [] });
     });
 
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
-      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      const { messages } = await request.get(`${url}/api/messages`, { json: true });
       messages.length.should.eql(1);
     });
 
     And("that a user navigates to dlx-web", async () => {
-      await page.goto(url, {waitUntil: "domcontentloaded"});
+      await page.goto(url, { waitUntil: "domcontentloaded" });
     });
 
     When("the user edits the message routing key sends it back to the queue", async () => {
       // bring out the editor
       const selector = await page.waitForSelector(".table > tbody > tr > td:nth-child(4)");
-      await selector.click({clickCount: 2});
+      await selector.click({ clickCount: 2 });
 
       // erase nack and write ack
       await page.keyboard.press("End");
@@ -249,7 +249,7 @@ Feature("dlx-web", () => {
     });
 
     And("there should be no messages left", async () => {
-      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      const { messages } = await request.get(`${url}/api/messages`, { json: true });
       messages.length.should.eql(0);
     });
 
@@ -277,21 +277,21 @@ Feature("dlx-web", () => {
         "#",
         (message, meta, notify) => {
           if (message.do === "nack") {
-            nacked.push({message, meta});
+            nacked.push({ message, meta });
             return notify.nack(false);
           }
           if (message.do === "ack") {
-            acked.push({message, meta});
+            acked.push({ message, meta });
             return notify.ack();
           }
-          return keep.push({message, meta});
+          return keep.push({ message, meta });
         },
-        done
+        done,
       );
     });
 
     And("that there is a published message which is nacked", (done) => {
-      broker.publish("foo", {do: "nack"}, {correlationId}, done);
+      broker.publish("foo", { do: "nack" }, { correlationId }, done);
     });
 
     And("no trello card found for correlationId", () => {
@@ -302,11 +302,11 @@ Feature("dlx-web", () => {
         .get("/1/search")
         .times(100)
         .query(true)
-        .reply(200, {cards: []});
+        .reply(200, { cards: [] });
     });
 
     And("that a user navigates to dlx-web", async () => {
-      await page.goto(url, {waitUntil: "domcontentloaded"});
+      await page.goto(url, { waitUntil: "domcontentloaded" });
     });
 
     When("the user marks and deleted the message", async () => {
@@ -320,7 +320,7 @@ Feature("dlx-web", () => {
 
     Then("the message should be gone", async () => {
       await sleep(500);
-      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      const { messages } = await request.get(`${url}/api/messages`, { json: true });
       messages.length.should.eql(0);
     });
 
@@ -349,22 +349,22 @@ Feature("dlx-web", () => {
         "#",
         (message, meta, notify) => {
           if (message.do === "nack") {
-            nacked.push({message, meta});
+            nacked.push({ message, meta });
             return notify.nack(false);
           }
           if (message.do === "ack") {
-            acked.push({message, meta});
+            acked.push({ message, meta });
             return notify.ack();
           }
-          return keep.push({message, meta});
+          return keep.push({ message, meta });
         },
-        done
+        done,
       );
     });
 
     And("that there two messages published message which are nacked", (done) => {
-      broker.publish("foo", {do: "nack", correlationId}, {correlationId}, () => {
-        broker.publish("bar", {do: "nack", correlationId: correlationId2}, {correlationId2}, done);
+      broker.publish("foo", { do: "nack", correlationId }, { correlationId }, () => {
+        broker.publish("bar", { do: "nack", correlationId: correlationId2 }, { correlationId2 }, done);
       });
     });
 
@@ -376,11 +376,11 @@ Feature("dlx-web", () => {
         .get("/1/search")
         .times(100)
         .query(true)
-        .reply(200, {cards: []});
+        .reply(200, { cards: [] });
     });
 
     And("that a user navigates to dlx-web", async () => {
-      await page.goto(url, {waitUntil: "domcontentloaded"});
+      await page.goto(url, { waitUntil: "domcontentloaded" });
     });
 
     When("the user filters messages on routing key foo, marks all and deletes", async () => {
@@ -398,7 +398,7 @@ Feature("dlx-web", () => {
 
     Then("the foo message should be gone", async () => {
       await sleep(500);
-      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      const { messages } = await request.get(`${url}/api/messages`, { json: true });
       messages.length.should.eql(1);
       const msg = messages[0];
       msg.routingKey.should.eql("bar");
@@ -429,21 +429,21 @@ Feature("dlx-web", () => {
         "#",
         (message, meta, notify) => {
           if (message.do === "nack") {
-            nacked.push({message, meta});
+            nacked.push({ message, meta });
             return notify.nack(false);
           }
           if (message.do === "ack") {
-            acked.push({message, meta});
+            acked.push({ message, meta });
             return notify.ack();
           }
-          return keep.push({message, meta});
+          return keep.push({ message, meta });
         },
-        done
+        done,
       );
     });
 
     And("that there is a published message which is nacked", (done) => {
-      broker.publish("foo", {do: "nack"}, {correlationId}, done);
+      broker.publish("foo", { do: "nack" }, { correlationId }, done);
     });
 
     And("no trello card found for correlationId", () => {
@@ -454,29 +454,29 @@ Feature("dlx-web", () => {
         .get("/1/search")
         .times(100)
         .query(true)
-        .reply(200, {cards: []});
+        .reply(200, { cards: [] });
     });
 
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
-      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      const { messages } = await request.get(`${url}/api/messages`, { json: true });
       messages.length.should.eql(1);
     });
 
     When("that a user navigates to dlx-web", async () => {
-      await page.goto(url, {waitUntil: "domcontentloaded"});
+      await page.goto(url, { waitUntil: "domcontentloaded" });
     });
 
     Then("the correlation id should be a clickable link", async () => {
       await page.waitForSelector(".table a");
       const hrefs = await page.$$eval(".table a", (as) =>
         as.map((a) => {
-          return {href: a.href, target: a.target};
-        })
+          return { href: a.href, target: a.target };
+        }),
       );
       hrefs.length.should.eql(1, await page.evaluate(() => document.body.innerHTML));
       hrefs[0].href.should.eql(
-        `${config.clientConfig.correlationIdUrlPrefix}${correlationId}${config.clientConfig.correlationIdUrlSuffix}`
+        `${config.clientConfig.correlationIdUrlPrefix}${correlationId}${config.clientConfig.correlationIdUrlSuffix}`,
       );
       hrefs[0].target.should.eql("_blank");
     });
@@ -516,21 +516,21 @@ Feature("dlx-web", () => {
         "#",
         (message, meta, notify) => {
           if (message.do === "nack") {
-            nacked.push({message, meta});
+            nacked.push({ message, meta });
             return notify.nack(false);
           }
           if (message.do === "ack") {
-            acked.push({message, meta});
+            acked.push({ message, meta });
             return notify.ack();
           }
-          return keep.push({message, meta});
+          return keep.push({ message, meta });
         },
-        done
+        done,
       );
     });
 
     And("that there is a published message which is nacked", (done) => {
-      broker.publish("foo", {do: "nack", errors: "some error"}, {correlationId}, done);
+      broker.publish("foo", { do: "nack", errors: "some error" }, { correlationId }, done);
     });
 
     And("no trello card found for correlationId", () => {
@@ -541,25 +541,25 @@ Feature("dlx-web", () => {
         .get("/1/search")
         .times(100)
         .query(true)
-        .reply(200, {cards: []});
+        .reply(200, { cards: [] });
     });
 
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
-      const {messages} = await request.get(`${url}/api/messages`, {json: true});
+      const { messages } = await request.get(`${url}/api/messages`, { json: true });
       messages.length.should.eql(1);
     });
 
     When("that a user navigates to dlx-web", async () => {
-      await page.goto(url, {waitUntil: "domcontentloaded"});
+      await page.goto(url, { waitUntil: "domcontentloaded" });
     });
 
     Then("the configured column should be present", async () => {
       await page.waitForSelector("th");
       const headings = await page.$$eval("th", (ths) =>
         ths.map((th) => {
-          return {text: th.textContent};
-        })
+          return { text: th.textContent };
+        }),
       );
 
       headings.pop().text.should.eql("Error");
@@ -567,8 +567,8 @@ Feature("dlx-web", () => {
       await page.waitForSelector("tr td");
       const rowTexts = await page.$$eval("tr td", (trs) =>
         trs.map((tr) => {
-          return {text: tr.textContent};
-        })
+          return { text: tr.textContent };
+        }),
       );
       rowTexts.pop().text.should.eql('"some error"');
     });
@@ -596,25 +596,25 @@ Feature("dlx-web", () => {
     });
 
     When("a user navigates to dlx-web", async () => {
-      await page.goto(url, {waitUntil: "domcontentloaded"});
+      await page.goto(url, { waitUntil: "domcontentloaded" });
     });
 
     Then("the configured header links should be present", async () => {
       await page.waitForSelector(".d-flex a");
       const links = await page.$$eval(".d-flex a", (link) =>
         link.map((l) => {
-          return {text: l.textContent, href: l.href, target: l.target};
-        })
+          return { text: l.textContent, href: l.href, target: l.target };
+        }),
       );
 
       links.length.should.eql(2, await page.evaluate(() => document.body.innerHTML));
 
       links.should.eql(
         [
-          {text: "Some cool wiki", href: "https://google.com/", target: "blank"},
-          {text: "Some other link", href: "https://stackoverflow.com/", target: "blank"}
+          { text: "Some cool wiki", href: "https://google.com/", target: "blank" },
+          { text: "Some other link", href: "https://stackoverflow.com/", target: "blank" },
         ],
-        JSON.stringify(links)
+        JSON.stringify(links),
       );
     });
 
@@ -625,11 +625,11 @@ Feature("dlx-web", () => {
 });
 
 async function clearMessages(url) {
-  const {messages} = await request.get(`${url}/api/messages`, {json: true});
+  const { messages } = await request.get(`${url}/api/messages`, { json: true });
   await Promise.all(
     messages.map(async (msg) => {
-      await request.post(`${url}/api/messages/${msg.id}/delete`, {json: true});
-    })
+      await request.post(`${url}/api/messages/${msg.id}/delete`, { json: true });
+    }),
   );
 }
 

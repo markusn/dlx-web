@@ -27,20 +27,20 @@
  */
 
 import React from "react";
-import {render} from "react-dom";
+import { render } from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-//import $ from "jquery";
-//import Popper from "popper.js";
+// import $ from "jquery";
+// import Popper from "popper.js";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import "./app.css";
 import BootstrapTable from "react-bootstrap-table-next";
 import cellEditFactory from "react-bootstrap-table2-editor";
-import filterFactory, {textFilter} from "react-bootstrap-table2-filter";
+import filterFactory, { textFilter } from "react-bootstrap-table2-filter";
 import axios from "axios";
 
 const cellEdit = cellEditFactory({
-  mode: "dbclick"
+  mode: "dbclick",
 });
 
 import ReactJson from "react-json-view";
@@ -51,7 +51,7 @@ export default class App extends React.Component {
     this.state = {
       data: {},
       selected: [],
-      darkMode: window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+      darkMode: window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches,
     };
   }
 
@@ -59,21 +59,19 @@ export default class App extends React.Component {
     fetch("/api/messages")
       .then((res) => res.json())
       .then((body) => {
-        const {data, selected} = this.state;
+        const { data, selected } = this.state;
         const newData = {};
         const newSelected = [];
         body.messages.forEach((msg) => {
           if (!data[msg.id]) {
-            console.log("adding row", msg.id);
             newData[msg.id] = msg;
           }
           if (data[msg.id]) {
-            console.log("reusing row", msg.id);
             if (selected.includes(msg.id)) newSelected.push(msg.id);
             newData[msg.id] = data[msg.id];
           }
         });
-        this.setState({data: newData, selected: newSelected});
+        this.setState({ data: newData, selected: newSelected });
       });
   }
 
@@ -84,19 +82,17 @@ export default class App extends React.Component {
   componentWillUnmount() {}
 
   handleBtnClickResend = () => {
-    const {data} = this.state;
+    const { data } = this.state;
     const promises = this.state.selected.map((msgId) => {
       const row = data[msgId];
-      if (!row) console.log("no data for msg with id", msgId, data);
       const params = {};
       if (window.config.editRoutingKey) {
         params.routingKey = row.routingKey;
       }
-      return axios.post(`/api/messages/${msgId}/resend`, row.message, {params});
+      return axios.post(`/api/messages/${msgId}/resend`, row.message, { params });
     });
     if (promises.length > 0) {
       Promise.all(promises).then(() => {
-        console.log("resent", this.state.selected);
         setTimeout(() => this.fetchMessages(), 1000);
       });
     }
@@ -107,7 +103,6 @@ export default class App extends React.Component {
       return axios.post(`/api/messages/${msgId}/delete`);
     });
     Promise.all(promises).then(() => {
-      console.log("deleted", this.state.selected);
       setTimeout(() => this.fetchMessages(), 1000);
     });
   };
@@ -115,11 +110,11 @@ export default class App extends React.Component {
   handleOnSelect = (row, isSelect) => {
     if (isSelect) {
       this.setState(() => ({
-        selected: [...this.state.selected, row.id]
+        selected: [ ...this.state.selected, row.id ],
       }));
     } else {
       this.setState(() => ({
-        selected: this.state.selected.filter((x) => x !== row.id)
+        selected: this.state.selected.filter((x) => x !== row.id),
       }));
     }
   };
@@ -128,20 +123,20 @@ export default class App extends React.Component {
     const ids = rows.map((r) => r.id);
     if (isSelect) {
       this.setState(() => ({
-        selected: ids
+        selected: ids,
       }));
     } else {
       this.setState(() => ({
-        selected: []
+        selected: [],
       }));
     }
   };
 
   handleMessageEdit = (o, id) => {
-    const {data} = this.state;
+    const { data } = this.state;
     const src = data[id];
     src.message = o.updated_src;
-    this.setState({data});
+    this.setState({ data });
     return true;
   };
 
@@ -191,31 +186,31 @@ export default class App extends React.Component {
   };
 
   handleBtnClickAddTrelloCard = (trelloItem) => {
-    return axios.post(`/api/trello/${trelloItem.msg.id}`, {...trelloItem.msg}).then((card) => {
-      const {data} = this.state;
+    return axios.post(`/api/trello/${trelloItem.msg.id}`, { ...trelloItem.msg }).then((card) => {
+      const { data } = this.state;
       const newData = {};
       Object.keys(data).forEach((msgId) => {
         if (data[msgId].id === trelloItem.msg.id) {
           newData[msgId] = {
             ...data[msgId],
             trello: {
-              shortUrl: card && card.data && card.data.shortUrl
-            }
+              shortUrl: card && card.data && card.data.shortUrl,
+            },
           };
         } else {
-          newData[msgId] = {...data[msgId]};
+          newData[msgId] = { ...data[msgId] };
         }
       });
-      this.setState({data: newData});
+      this.setState({ data: newData });
     });
   };
 
   render() {
-    const {data} = this.state;
+    const { data } = this.state;
     const columns = [
-      {text: "First occurred", dataField: "ts", sort: true, editable: false},
-      {text: "Id", dataField: "id", hidden: true, editable: false},
-      {text: "Queues", dataField: "queues", sort: true, editable: false},
+      { text: "First occurred", dataField: "ts", sort: true, editable: false },
+      { text: "Id", dataField: "id", hidden: true, editable: false },
+      { text: "Queues", dataField: "queues", sort: true, editable: false },
       {
         text: "Routing Key",
         dataField: "routingKey",
@@ -224,22 +219,22 @@ export default class App extends React.Component {
         filter: textFilter(),
         validator: (newValue) => {
           if (!newValue) {
-            return {valid: false, message: "Routing key cannot be empty"};
+            return { valid: false, message: "Routing key cannot be empty" };
           }
           return true;
-        }
+        },
       },
       {
         text: "Correlation Id",
         dataField: "correlationId",
         sort: true,
         formatter: this.correlationIdFormatter,
-        editable: false
-      }
+        editable: false,
+      },
     ];
 
     if (window.config.trello) {
-      columns.push({text: "Trello", dataField: "trello", sort: true, formatter: this.trelloFormatter, editable: false});
+      columns.push({ text: "Trello", dataField: "trello", sort: true, formatter: this.trelloFormatter, editable: false });
     }
 
     if (window.config.extraCols && window.config.extraCols.length) {
@@ -250,7 +245,7 @@ export default class App extends React.Component {
           formatter: (message) => {
             return (JSON.stringify(message[colConf.key], null, " ") || "").replace(/\n/g, "");
           },
-          editable: false
+          editable: false,
         });
       });
     }
@@ -260,7 +255,7 @@ export default class App extends React.Component {
       onSelect: this.handleOnSelect,
       onSelectAll: this.handleOnSelectAll,
       bgColor: this.state.darkMode ? "#d2992226" : "#00BFFF",
-      mode: "checkbox" // single row selection
+      mode: "checkbox", // single row selection
     };
 
     const expandRow = {
@@ -282,7 +277,7 @@ export default class App extends React.Component {
             />
           </div>
         );
-      }
+      },
     };
 
     function HeaderLinks() {

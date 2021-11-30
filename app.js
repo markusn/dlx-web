@@ -1,4 +1,4 @@
-const {init, shutdown} = require("./lib/server/index");
+const { init, shutdown } = require("./lib/server/index");
 const logger = require("./lib/server/dummy-logger");
 
 if (require.main === module) {
@@ -9,4 +9,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = {init, shutdown};
+module.exports = { init, shutdown };

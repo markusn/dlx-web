@@ -8,7 +8,7 @@ Feature("Trello", () => {
     nock.cleanAll();
   });
   Scenario("Get cards for messages", () => {
-    const message = {id: "some-id", correlationId: "some-correlation-id"};
+    const message = { id: "some-id", correlationId: "some-correlation-id" };
     Given("we can find card by correlationId in trello", () => {
       nock("https://api.trello.com")
         .get("/1/search")
@@ -24,16 +24,16 @@ Feature("Trello", () => {
           // eslint-disable-next-line camelcase
           card_list: true,
           // eslint-disable-next-line camelcase
-          card_members: true
+          card_members: true,
         })
         .reply(200, {
           cards: [
             {
               id: "some-trello-id",
               shortUrl: "http://some-short-url",
-              list: {name: "some-list-name"}
-            }
-          ]
+              list: { name: "some-list-name" },
+            },
+          ],
         });
     });
 
@@ -48,18 +48,18 @@ Feature("Trello", () => {
           list: true,
           members: true,
           // eslint-disable-next-line camelcase
-          member_fields: "initials"
+          member_fields: "initials",
         })
         .reply(200, {
           id: "some-trello-id",
           shortUrl: "http://some-short-url",
-          list: {name: "some-list-name"}
+          list: { name: "some-list-name" },
         });
     });
 
     let withTrello;
     When("getting cards for messages", async () => {
-      withTrello = await trello.getCards([message]);
+      withTrello = await trello.getCards([ message ]);
     });
 
     Then("the message should have a trello card", () => {
@@ -72,7 +72,7 @@ Feature("Trello", () => {
     });
 
     Given("getting cards for message again", async () => {
-      withTrello = await trello.getCards([message]);
+      withTrello = await trello.getCards([ message ]);
     });
 
     Then("no search should have been made", () => {
@@ -87,7 +87,7 @@ Feature("Trello", () => {
       id: "some-id",
       correlationId: "some-correlation-id-2",
       routingKey: "some-routing-key",
-      message: {foo: "bar"}
+      message: { foo: "bar" },
     };
 
     Given("we can create new card in trello", () => {
@@ -100,11 +100,11 @@ Feature("Trello", () => {
           idList: config.trello.createOnListId,
           name: `DLX ${message.routingKey} (#${message.correlationId.substr(message.correlationId.length - 5)})`,
           desc: `**correlationId** \n ${message.correlationId} \n\n---\n\n **Meddelande** \n \`\`\`${JSON.stringify(
-            message.message
+            message.message,
           )}\`\`\``,
-          idLabels: config.trello.labelIds
+          idLabels: config.trello.labelIds,
         })
-        .reply(200, {id: "some-trello-id-2", shortUrl: "http://some-short-url"});
+        .reply(200, { id: "some-trello-id-2", shortUrl: "http://some-short-url" });
     });
 
     let card;
@@ -133,22 +133,22 @@ Feature("Trello", () => {
           list: true,
           members: true,
           // eslint-disable-next-line camelcase
-          member_fields: "initials"
+          member_fields: "initials",
         })
         .reply(200, {
           id: "some-trello-id-2",
           shortUrl: "http://some-short-url",
-          list: {name: "some-list-name"},
+          list: { name: "some-list-name" },
           members: [
-            {id: "some-member-id", initials: "AA"},
-            {id: "some-member-id-2", initials: "BB"}
-          ]
+            { id: "some-member-id", initials: "AA" },
+            { id: "some-member-id-2", initials: "BB" },
+          ],
         });
     });
 
     let withTrello;
     When("getting cards for messages", async () => {
-      withTrello = await trello.getCards([message]);
+      withTrello = await trello.getCards([ message ]);
     });
 
     Then("the message should have a trello card", () => {
