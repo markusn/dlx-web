@@ -1,7 +1,7 @@
 const nock = require("nock");
 const puppeteer = require("puppeteer");
 const config = require("exp-config");
-const request = require("request-promise-native");
+const axios = require("axios");
 const initConnection = require("exp-amqp-connection");
 const uuid = require("uuid");
 
@@ -102,7 +102,7 @@ Feature("dlx-web", () => {
 
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
-      const { messages } = await request.get(`${url}/api/messages`, { json: true });
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
       messages.length.should.eql(1);
     });
 
@@ -147,7 +147,7 @@ Feature("dlx-web", () => {
     });
 
     And("there should be no messages left", async () => {
-      const { messages } = await request.get(`${url}/api/messages`, { json: true });
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
       messages.length.should.eql(0);
     });
 
@@ -206,7 +206,7 @@ Feature("dlx-web", () => {
 
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
-      const { messages } = await request.get(`${url}/api/messages`, { json: true });
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
       messages.length.should.eql(1);
     });
 
@@ -251,7 +251,7 @@ Feature("dlx-web", () => {
     });
 
     And("there should be no messages left", async () => {
-      const { messages } = await request.get(`${url}/api/messages`, { json: true });
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
       messages.length.should.eql(0);
     });
 
@@ -322,7 +322,7 @@ Feature("dlx-web", () => {
 
     Then("the message should be gone", async () => {
       await sleep(500);
-      const { messages } = await request.get(`${url}/api/messages`, { json: true });
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
       messages.length.should.eql(0);
     });
 
@@ -400,7 +400,7 @@ Feature("dlx-web", () => {
 
     Then("the foo message should be gone", async () => {
       await sleep(500);
-      const { messages } = await request.get(`${url}/api/messages`, { json: true });
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
       messages.length.should.eql(1);
       const msg = messages[0];
       msg.routingKey.should.eql("bar");
@@ -461,7 +461,7 @@ Feature("dlx-web", () => {
 
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
-      const { messages } = await request.get(`${url}/api/messages`, { json: true });
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
       messages.length.should.eql(1);
     });
 
@@ -548,7 +548,7 @@ Feature("dlx-web", () => {
 
     And("the message is handled by dlx-web", async () => {
       await sleep(500);
-      const { messages } = await request.get(`${url}/api/messages`, { json: true });
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
       messages.length.should.eql(1);
     });
 
@@ -627,10 +627,10 @@ Feature("dlx-web", () => {
 });
 
 async function clearMessages(url) {
-  const { messages } = await request.get(`${url}/api/messages`, { json: true });
+  const { data: { messages } } = await axios.get(`${url}/api/messages`);
   await Promise.all(
     messages.map(async (msg) => {
-      await request.post(`${url}/api/messages/${msg.id}/delete`, { json: true });
+      await axios.post(`${url}/api/messages/${msg.id}/delete`);
     }),
   );
 }
