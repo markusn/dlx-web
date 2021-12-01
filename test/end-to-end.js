@@ -119,6 +119,8 @@ Feature("dlx-web", () => {
       await page.click(".object-content > .variable-row > .click-to-edit > .click-to-edit-icon > svg");
 
       // erase nack and write ack
+      await page.waitForSelector("textarea");
+      await page.click("textarea");
       await page.keyboard.press("End");
       await page.keyboard.press("Backspace");
       await page.keyboard.press("Backspace");

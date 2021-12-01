@@ -1,5 +1,5 @@
 const path = require("path");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 const outputDirectory = "dist";
 
@@ -34,7 +34,8 @@ module.exports = {
       },
       {
         test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        loader: "url-loader?limit=100000",
+        loader: "url-loader",
+        options: { limit: 100000 },
       },
     ],
   },
@@ -45,5 +46,5 @@ module.exports = {
       "/api": "http://localhost:3000",
     },
   },
-  plugins: [ new CleanWebpackPlugin([ outputDirectory ]) ],
+  plugins: [ new CleanWebpackPlugin({ output: { path: path.join(__dirname, outputDirectory) } }) ],
 };
