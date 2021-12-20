@@ -154,6 +154,82 @@ Feature("dlx-web", () => {
     after((done) => broker.unsubscribeAll(done));
   });
 
+  Scenario("sending a message back to the queue failure, no queue", () => {
+    let page;
+    const correlationId = uuid.v4();
+
+    before(async () => {
+      page = await browser.newPage();
+      await page._client.send("Network.clearBrowserCookies");
+    });
+
+    Given("no messages are on the DLX", async () => {
+      await clearMessages(url);
+    });
+
+    And("that there is a published message directly to the dlx queue", (done) => {
+      broker.sendToQueue(config.dlxQueue, { do: "nack" }, { correlationId }, done);
+    });
+
+    And("no trello card found for correlationId", () => {
+      nock("https://api.trello.com")
+        .filteringPath(() => {
+          return "/1/search";
+        })
+        .get("/1/search")
+        .times(100)
+        .query(true)
+        .reply(200, { cards: [] });
+    });
+
+    And("the message is handled by dlx-web", async () => {
+      await sleep(1000);
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
+      messages.length.should.eql(1);
+    });
+
+    And("that a user navigates to dlx-web", async () => {
+      await page.goto(url, { waitUntil: "domcontentloaded" });
+    });
+
+    When("the user edits the message and tries to send it back to the queue", async () => {
+      // bring out the editor
+      await page.waitForSelector(".table > tbody > tr > td:nth-child(2)");
+      await page.click(".table > tbody > tr > td:nth-child(2)");
+      await page.waitForSelector(".object-content > .variable-row > .click-to-edit > .click-to-edit-icon > svg");
+      await page.click(".string-value");
+      await page.click(".object-content > .variable-row > .click-to-edit > .click-to-edit-icon > svg");
+
+      // erase nack and write ack
+      await page.waitForSelector("textarea");
+      await page.click("textarea");
+      await page.keyboard.press("End");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.type(".object-content > .variable-row > .variable-value", "ack");
+      await page.waitForSelector("div > .edit-check > svg > g > path");
+      await page.click("div > .edit-check > svg > g > path");
+
+      // click the checkbox
+      await page.waitForSelector(".table > tbody > tr > td > .selection-input-4");
+      await page.click(".table > tbody > tr > td > .selection-input-4");
+
+      // click send back to queue
+      await page.waitForSelector("#root > div > .btn-toolbar > .btn-group > .btn-primary");
+      await page.click("#root > div > .btn-toolbar > .btn-group > .btn-primary");
+    });
+
+    Then("the message should not have been ack:ed as there is no queue to send back to", async () => {
+      await sleep(1000);
+      const { data: { messages } } = await axios.get(`${url}/api/messages`);
+      messages.length.should.eql(1);
+    });
+
+    after((done) => broker.unsubscribeAll(done));
+  });
+
   Scenario("sending a message back to the queue with a different routing key", () => {
     const nacked = [];
     const acked = [];
